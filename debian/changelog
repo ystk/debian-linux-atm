@@ -1,3 +1,32 @@
+linux-atm (1:2.5.1-1.5) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Correct directory in libatm1-dev.postinst.
+    Correct the directory checked for the directory symlink migration to be
+    /usr/share/doc/libatm1-dev for the libatm1-dev binary package. It
+    wrongly refered to /usr/share/doc/atm-tools. (Closes: #687857)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Sat, 22 Sep 2012 11:03:25 +0200
+
+linux-atm (1:2.5.1-1.4) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Make build targets executable in parallel (Closes: #674611).
+
+ -- Luk Claes <luk@debian.org>  Tue, 03 Jul 2012 01:01:15 +0000
+
+linux-atm (1:2.5.1-1.3) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Package converted to multiarch.
+  * Support sendsigs.omit.d/ in /run and depend on initscripts
+    >= 2.88dsf-13.3. (Closes: #633029)
+  * Install the changelogs only in libatm1.
+  * Removed the K links of the atmarpd initscript, there is no point in
+    stopping the daemon.
+
+ -- Marco d'Itri <md@linux.it>  Sun, 30 Oct 2011 15:09:29 +0100
+
 linux-atm (1:2.5.1-1.2) unstable; urgency=low
 
   * Non-maintainer upload.

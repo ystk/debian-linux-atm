@@ -1,6 +1,12 @@
 #!/usr/bin/make -f
-# Sample debian/rules that uses debhelper.
-# GNU copyright 1997 to 1999 by Joey Hess.
+SHELL+= -e
+
+DPKG_EXPORT_BUILDFLAGS = 1
+-include /usr/share/dpkg/buildflags.mk
+
+CFLAGS += -fno-strict-aliasing
+
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
@@ -10,28 +16,32 @@ else
   CONFFLAGS += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
 endif
 
-configure: config.status
-config.status:
+autoreconf: autoreconf-stamp
+autoreconf-stamp:
 	dh_testdir
 	autoreconf --force --install --symlink
-	./configure CFLAGS="-fno-strict-aliasing $(CFLAGS)" \
-		LDFLAGS="$(LDFLAGS)" $(CONFFLAGS) \
-		--prefix=/usr --mandir=/usr/share/man --sysconfdir=/etc
-	touch configure-stamp
+	touch $@
 
-build: config.status build-stamp
-build-stamp:
+configure: config.status
+config.status: autoreconf-stamp
+	dh_testdir
+	./configure $(CONFFLAGS) \
+		--libdir=/lib/$(DEB_HOST_MULTIARCH) \
+		--prefix=/usr --mandir=/usr/share/man --sysconfdir=/etc
+
+build: build-arch build-indep
+build-arch: build-stamp
+build-indep: build-stamp
+build-stamp: config.status
 	dh_testdir
 
 	$(MAKE)
 	cat debian/copyright.header COPYING > debian/copyright
 
-	touch build-stamp
+	touch $@
 
 clean:
 	dh_testdir
-	dh_testroot
-	rm -f build-stamp
 
 	[ ! -f Makefile ] || $(MAKE) distclean
 	rm -f debian/atm-tools.8 debian/copyright \
@@ -47,7 +57,7 @@ clean:
 install: build
 	dh_testdir
 	dh_testroot
-	dh_clean -k
+	dh_prep
 	dh_installdirs
 
 	$(MAKE) DESTDIR=`pwd`/debian/tmp install
@@ -60,11 +70,13 @@ install: build
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_install
+	dh_install --sourcedir=debian/tmp
 	rm debian/atm-tools/usr/share/man/man8/br2684ctl.8
+	ln -sf /lib/$(DEB_HOST_MULTIARCH)/libatm.so.1.0.0 \
+		debian/libatm1-dev/usr/lib/libatm.so
 
-	dh_installdocs
-	dh_installinit --init-script=atm -- start 34 0 6 . start 39 S .
+	dh_installdocs --link-doc=libatm1
+	dh_installinit --init-script=atm -- start 39 S .
 	dh_installman
 	dh_installchangelogs ChangeLog
 	dh_link
@@ -73,10 +85,11 @@ binary-arch: build install
 	dh_fixperms
 	dh_makeshlibs -- -c4
 	dh_installdeb
-	dh_shlibdeps -L libatm1 -l debian/libatm1/lib
+	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
 
 binary: binary-arch
-.PHONY: build binary-indep binary-arch binary install configure
+
+.PHONY: build-arch build-indep build binary-arch binary-indep install autoreconf configure clean install

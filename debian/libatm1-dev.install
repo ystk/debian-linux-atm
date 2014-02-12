@@ -1,3 +1,3 @@
-debian/tmp/usr/include/*
-debian/tmp/usr/lib/libatm.a
-debian/tmp/usr/lib/libatm.so
+usr/include/*
+lib/*/libatm.a /usr/lib/
+lib/*/libatm.so /usr/lib/

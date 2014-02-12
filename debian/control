@@ -2,11 +2,12 @@ Source: linux-atm
 Section: net
 Priority: optional
 Maintainer: Peter De Schrijver (p2) <p2@mind.be>
-Build-Depends: debhelper (>> 5), bison, flex, autoconf, automake, libtool, perl
-Standards-Version: 3.8.3
+Build-Depends: debhelper (>> 8.1.3~), bison, flex, autoconf, automake, libtool, perl, initscripts (>= 2.88dsf-13.3)
+Standards-Version: 3.9.2
 
 Package: atm-tools
-Architecture: any
+Architecture: linux-any
+Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Base programs for ATM in Linux, the net-tools for ATM
  This package provides all the basic programs needed for setting up,
@@ -24,7 +25,8 @@ Description: Base programs for ATM in Linux, the net-tools for ATM
 Homepage: http://linux-atm.sourceforge.net/
 
 Package: br2684ctl
-Architecture: any
+Architecture: linux-any
+Multi-Arch: foreign
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Utility for configuring RFC 2684 ATM/Ethernet bridging
  ATM bridging is a way to extend Ethernet over an ATM network and is
@@ -37,7 +39,9 @@ Description: Utility for configuring RFC 2684 ATM/Ethernet bridging
 
 Package: libatm1
 Section: libs
-Architecture: any
+Architecture: linux-any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Conflicts: atm-tools (<< 2.4.1-6)
 Description: shared library for ATM (Asynchronous Transfer Mode)
@@ -46,7 +50,7 @@ Homepage: http://linux-atm.sourceforge.net/
 
 Package: libatm1-dev
 Section: libdevel
-Architecture: any
+Architecture: linux-any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libatm1 (= ${binary:Version})
 Replaces: atm-dev (<< 2.4.1-7)
 Conflicts: atm-dev (<< 2.4.1-7)

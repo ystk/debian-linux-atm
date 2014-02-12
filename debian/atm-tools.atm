@@ -6,12 +6,12 @@
 # X-Start-Before:    networking
 # X-Stop-After:      networking
 # Default-Start:     S
-# Default-Stop:      0 6
+# Default-Stop:      
 # Short-Description: Start/stop the atm daemon(s).
 ### END INIT INFO
 
 DAEMON='/sbin/atmarpd'
-PIDFILE='/var/run/atmarpd.pid'
+PIDFILE='/run/atmarpd.pid'
 DEFAULTS='/etc/default/atm'
 
 test -f $DAEMON || exit 0
@@ -27,11 +27,9 @@ if [ "$START_DAEMON" != "yes" -a "$1" != "stop" ]; then
 fi
 
 sendsigs_omit() {
-	[ -d /lib/init/rw/ ] || return 0
-	local OMITDIR=/lib/init/rw/sendsigs.omit.d
-	mkdir -p $OMITDIR
-	rm -f $OMITDIR/atmarpd
-	ln -s $PIDFILE $OMITDIR/atmarpd
+	local omitdir=/run/sendsigs.omit.d
+	[ -d $omitdir ] || return 0
+	ln -sf $PIDFILE $omitdir/atmarpd
 }
 
 case "$1" in
